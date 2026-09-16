@@ -1,4 +1,4 @@
-ㄹㅇㅁㄹ <script>
+<script>
  
  let gameState = "waiting";
 +let preparationTime = 90;
