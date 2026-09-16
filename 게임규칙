@@ -1,1 +1,792 @@
-러니ㅏㄹㅁ
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>경찰과 도둑 숨바꼭질</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #1b1b1b;
+        color: white;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .panel {
+        background: #292929;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .settings {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    input,
+    select,
+    button {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        font-size: 15px;
+    }
+
+    button {
+        cursor: pointer;
+        background: #444;
+        color: white;
+    }
+
+    button:hover {
+        background: #555;
+    }
+
+    .start {
+        margin-top: 20px;
+        background: #777;
+        font-size: 18px;
+    }
+
+    .timer {
+        text-align: center;
+        font-size: 48px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .state {
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    .teams {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .team {
+        background: #333;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .player {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px;
+        margin: 5px 0;
+        background: #444;
+        border-radius: 5px;
+    }
+
+    .jail {
+        margin-top: 15px;
+        padding: 15px;
+        background: #3a3a3a;
+        border-radius: 8px;
+    }
+
+    .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .log {
+        height: 180px;
+        overflow-y: auto;
+        background: #111;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+        .settings,
+        .teams {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🚔 경찰과 도둑 숨바꼭질</h1>
+
+    <div class="panel">
+
+        <h2>게임 설정</h2>
+
+        <div class="settings">
+
+            <div>
+                <label>전체 플레이어</label>
+                <input id="playerCount" type="number" min="5" max="10" value="6">
+            </div>
+
+            <div>
+                <label>경찰 B팀</label>
+                <input id="policeCount" type="number" min="1" max="2" value="1">
+            </div>
+
+            <div>
+                <label>게임 시간 (초)</label>
+                <input id="gameTime" type="number" min="60" max="600" value="360">
+            </div>
+
+        </div>
+
+        <button class="start" onclick="startGame()">
+            게임 시작
+        </button>
+
+    </div>
+
+    <div class="panel">
+
+        <div id="state" class="state">
+            게임 대기 중
+        </div>
+
+        <div id="timer" class="timer">
+            00:00
+        </div>
+
+    </div>
+
+    <div class="teams">
+
+        <div class="team">
+
+            <h2>🕵️ A팀 — 도둑</h2>
+
+            <div id="thieves"></div>
+
+            <div class="jail">
+
+                <h3>🔒 감옥</h3>
+
+                <div id="jailPlayers">
+                    없음
+                </div>
+
+                <button onclick="rescuePlayer()">
+                    팀원 구출 (10초)
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="team">
+
+            <h2>👮 B팀 — 경찰</h2>
+
+            <div id="police"></div>
+
+            <div class="jail">
+
+                <h3>경찰 물건 공격</h3>
+
+                <p>
+                    팀 HP:
+                    <strong id="teamHP">10</strong>
+                    / 10
+                </p>
+
+                <button onclick="objectAttack()">
+                    물건 공격
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>게임 로그</h2>
+
+        <div id="log" class="log"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let gameState = "waiting";
+
+let players = [];
+
+let thieves = [];
+let police = [];
+let jail = [];
+
+let teamHP = 10;
+
+let gameTimer = null;
+let preparationTimer = null;
+
+let remainingTime = 0;
+
+let attackCooldown = false;
+
+
+// ==========================
+// 로그
+// ==========================
+
+function log(message) {
+
+    const logBox = document.getElementById("log");
+
+    const line = document.createElement("div");
+
+    line.textContent = message;
+
+    logBox.appendChild(line);
+
+    logBox.scrollTop = logBox.scrollHeight;
+}
+
+
+// ==========================
+// 게임 시작
+// ==========================
+
+function startGame() {
+
+    if (gameState !== "waiting") {
+        return;
+    }
+
+    const playerCount =
+        Number(document.getElementById("playerCount").value);
+
+    const policeCount =
+        Number(document.getElementById("policeCount").value);
+
+    remainingTime =
+        Number(document.getElementById("gameTime").value);
+
+
+    if (playerCount < 5 || playerCount > 10) {
+
+        alert("플레이어는 5~10명이어야 합니다.");
+
+        return;
+    }
+
+
+    if (policeCount < 1 || policeCount > 2) {
+
+        alert("경찰은 1~2명이어야 합니다.");
+
+        return;
+    }
+
+
+    players = [];
+    thieves = [];
+    police = [];
+    jail = [];
+
+    teamHP = 10;
+
+
+    for (let i = 0; i < playerCount; i++) {
+
+        const player = {
+
+            id: i + 1,
+
+            name: `Player ${i + 1}`,
+
+            lives: 2,
+
+            eliminated: false,
+
+            jailed: false
+
+        };
+
+
+        players.push(player);
+
+
+        if (i < policeCount) {
+
+            police.push(player);
+
+        } else {
+
+            thieves.push(player);
+
+        }
+
+    }
+
+
+    updateUI();
+
+
+    gameState = "preparation";
+
+    document.getElementById("state").textContent =
+        "A팀 준비 시간";
+
+
+    log("게임이 시작되었습니다.");
+
+    log("A팀은 1~2분 동안 준비할 수 있습니다.");
+
+    log("B팀은 감옥에서 시작합니다.");
+
+
+    startPreparation();
+
+}
+
+
+// ==========================
+// 준비 시간
+// ==========================
+
+function startPreparation() {
+
+    let preparationTime = 90;
+
+    updateTimer(preparationTime);
+
+
+    preparationTimer = setInterval(() => {
+
+        preparationTime--;
+
+        updateTimer(preparationTime);
+
+
+        if (preparationTime <= 0) {
+
+            clearInterval(preparationTimer);
+
+            startSearching();
+
+        }
+
+    }, 1000);
+
+}
+
+
+// ==========================
+// 게임 시작
+// ==========================
+
+function startSearching() {
+
+    gameState = "playing";
+
+    document.getElementById("state").textContent =
+        "B팀 수색 시간";
+
+
+    log("준비 시간이 종료되었습니다.");
+
+    log("A팀은 더 이상 이동할 수 없습니다.");
+
+    log("B팀의 수색이 시작되었습니다.");
+
+
+    startGameTimer();
+
+}
+
+
+// ==========================
+// 게임 타이머
+// ==========================
+
+function startGameTimer() {
+
+    gameTimer = setInterval(() => {
+
+        remainingTime--;
+
+        updateTimer(remainingTime);
+
+
+        if (getAliveThieves() === 0) {
+
+            endGame("B");
+
+            return;
+
+        }
+
+
+        if (remainingTime <= 0) {
+
+            endGame("A");
+
+        }
+
+    }, 1000);
+
+}
+
+
+// ==========================
+// 체포
+// ==========================
+
+function capturePlayer(playerId) {
+
+    if (gameState !== "playing") {
+        return;
+    }
+
+
+    const player =
+        thieves.find(p => p.id === playerId);
+
+
+    if (!player || player.eliminated) {
+        return;
+    }
+
+
+    player.lives--;
+
+
+    if (player.lives === 1) {
+
+        player.jailed = true;
+
+        jail.push(player);
+
+
+        log(`${player.name} 체포 → 감옥`);
+
+    }
+
+    else {
+
+        player.eliminated = true;
+
+        log(`${player.name} 두 번째 체포 → 탈락`);
+
+    }
+
+
+    updateUI();
+
+
+    if (getAliveThieves() === 0) {
+
+        endGame("B");
+
+    }
+
+}
+
+
+// ==========================
+// 감옥 구출
+// ==========================
+
+function rescuePlayer() {
+
+    if (gameState !== "playing") {
+        return;
+    }
+
+
+    if (jail.length === 0) {
+
+        log("감옥에 구출할 플레이어가 없습니다.");
+
+        return;
+
+    }
+
+
+    log("구출 시작... 10초 필요");
+
+
+    setTimeout(() => {
+
+        if (jail.length === 0) {
+            return;
+        }
+
+
+        const player = jail.shift();
+
+        player.jailed = false;
+
+        log(`${player.name} 구출 완료`);
+
+        updateUI();
+
+    }, 10000);
+
+}
+
+
+// ==========================
+// 물건 공격
+// ==========================
+
+function objectAttack() {
+
+    if (gameState !== "playing") {
+        return;
+    }
+
+
+    if (attackCooldown) {
+
+        log("물건 공격 쿨다운 중입니다.");
+
+        return;
+
+    }
+
+
+    if (teamHP <= 0) {
+
+        log("B팀의 공격 HP가 모두 소진되었습니다.");
+
+        return;
+
+    }
+
+
+    teamHP--;
+
+    attackCooldown = true;
+
+
+    log(`B팀이 물건을 공격했습니다. HP ${teamHP}/10`);
+
+
+    updateUI();
+
+
+    setTimeout(() => {
+
+        attackCooldown = false;
+
+        log("물건 공격 쿨다운 종료");
+
+    }, 10000);
+
+}
+
+
+// ==========================
+// 생존 A 계산
+// ==========================
+
+function getAliveThieves() {
+
+    return thieves.filter(
+        player => !player.eliminated
+    ).length;
+
+}
+
+
+// ==========================
+// 게임 종료
+// ==========================
+
+function endGame(winner) {
+
+    clearInterval(gameTimer);
+    clearInterval(preparationTimer);
+
+    gameState = "finished";
+
+
+    if (winner === "A") {
+
+        document.getElementById("state").textContent =
+            "🕵️ A팀 승리";
+
+        log("제한 시간이 종료되었습니다.");
+
+        log("A팀에 생존자가 남아 있습니다.");
+
+    }
+
+    else {
+
+        document.getElementById("state").textContent =
+            "👮 B팀 승리";
+
+        log("모든 A팀 플레이어가 탈락했습니다.");
+
+    }
+
+}
+
+
+// ==========================
+// UI
+// ==========================
+
+function updateTimer(seconds) {
+
+    const minutes =
+        Math.floor(seconds / 60);
+
+    const secs =
+        seconds % 60;
+
+
+    document.getElementById("timer").textContent =
+        `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+}
+
+
+function updateUI() {
+
+    const thievesBox =
+        document.getElementById("thieves");
+
+    const policeBox =
+        document.getElementById("police");
+
+    const jailBox =
+        document.getElementById("jailPlayers");
+
+
+    thievesBox.innerHTML = "";
+
+    policeBox.innerHTML = "";
+
+
+    thieves.forEach(player => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "player";
+
+
+        let status = "";
+
+        if (player.eliminated) {
+
+            status = "탈락";
+
+        }
+        else if (player.jailed) {
+
+            status = "감옥";
+
+        }
+        else {
+
+            status = `목숨 ${player.lives}`;
+
+        }
+
+
+        div.innerHTML = `
+
+            <span>${player.name}</span>
+
+            <span>${status}</span>
+
+        `;
+
+
+        thievesBox.appendChild(div);
+
+    });
+
+
+    police.forEach(player => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "player";
+
+
+        div.innerHTML = `
+
+            <span>${player.name}</span>
+
+            <span>경찰</span>
+
+        `;
+
+
+        policeBox.appendChild(div);
+
+    });
+
+
+    if (jail.length === 0) {
+
+        jailBox.textContent = "없음";
+
+    }
+
+    else {
+
+        jailBox.innerHTML =
+            jail.map(player => player.name).join("<br>");
+
+    }
+
+
+    document.getElementById("teamHP").textContent =
+        teamHP;
+
+}
+
+</script>
+
+</body>
+</html>
