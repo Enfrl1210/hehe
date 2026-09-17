@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busted! - Tutorial</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            overflow: hidden;
+        }
+
+        .tutorial {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 상단 */
+        header {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .skip {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .skip:hover {
+            color: white;
+        }
+
+        /* 진행도 */
+        .progress {
+            height: 4px;
+            background: #333;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 14.28%;
+            background: white;
+            transition: width 0.3s;
+        }
+
+        /* 본문 */
+        .content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .slide {
+            width: 900px;
+            max-width: 90%;
+            text-align: center;
+            display: none;
+            animation: fade 0.3s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .number {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin: 10px 0 20px;
+        }
+
+        h2 {
+            font-size: 36px;
+            margin: 10px 0 25px;
+        }
+
+        p {
+            color: #ccc;
+            font-size: 19px;
+            line-height: 1.7;
+        }
+
+        /* 역할 카드 */
+        .roles {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 35px;
+        }
+
+        .role {
+            width: 260px;
+            padding: 30px;
+            border: 1px solid #444;
+            border-radius: 15px;
+            background: #191919;
+        }
+
+        .role-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .role h3 {
+            font-size: 25px;
+            margin: 10px;
+        }
+
+        .role p {
+            font-size: 15px;
+            margin: 0;
+        }
+
+        /* 규칙 카드 */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 35px;
+        }
+
+        .card {
+            background: #191919;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 25px 15px;
+        }
+
+        .card .icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        .card h3 {
+            margin: 8px 0;
+            font-size: 19px;
+        }
+
+        .card p {
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* 물건 */
+        .object-demo {
+            width: 500px;
+            height: 220px;
+            margin: 35px auto;
+            border: 1px solid #444;
+            border-radius: 15px;
+            background: #191919;
+            position: relative;
+        }
+
+        .box {
+            position: absolute;
+            width: 100px;
+            height: 70px;
+            background: #777;
+            border-radius: 5px;
+            bottom: 30px;
+            left: 90px;
+        }
+
+        .person {
+            position: absolute;
+            width: 45px;
+            height: 80px;
+            background: #ddd;
+            border-radius: 20px 20px 8px 8px;
+            bottom: 30px;
+            right: 120px;
+        }
+
+        .person::before {
+            content: "";
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #eee;
+            top: -30px;
+            left: 5px;
+        }
+
+        /* 감옥 */
+        .jail {
+            width: 300px;
+            height: 180px;
+            margin: 35px auto;
+            border: 5px solid #777;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #191919;
+        }
+
+        .jail span {
+            font-size: 70px;
+        }
+
+        /* 하단 */
+        footer {
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn {
+            min-width: 120px;
+            padding: 14px 25px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background: #222;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #333;
+        }
+
+        .btn.next {
+            background: white;
+            color: black;
+            border-color: white;
+        }
+
+        .btn.next:hover {
+            background: #ddd;
+        }
+
+        .finish {
+            display: none;
+        }
+
+        @media (max-width: 700px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            .roles {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .role {
+                width: 220px;
+                padding: 18px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .object-demo {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="tutorial">
+
+    <header>
+        <div class="logo">Busted!</div>
+        <button class="skip" onclick="finishTutorial()">튜토리얼 건너뛰기</button>
+    </header>
+
+    <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <main class="content">
+
+        <!-- 1 -->
+        <section class="slide active">
+            <div class="number">01 / 07</div>
+            <h1>Busted!</h1>
+            <p>
+                경찰에게 들키지 않고 숨어서 살아남거나,<br>
+                도둑을 찾아 체포하는 숨바꼭질 게임입니다.
+            </p>
+        </section>
+
+        <!-- 2 -->
+        <section class="slide">
+            <div class="number">02 / 07</div>
+            <h2>먼저 역할을 알아보세요</h2>
+
+            <div class="roles">
+
+                <div class="role">
+                    <div class="role-icon">🏃</div>
+                    <h3>도둑</h3>
+                    <p>
+                        맵에 숨어 경찰에게 발견되지 않는 것이 목표입니다.
+                    </p>
+                </div>
+
+                <div class="role">
+                    <div class="role-icon">👮</div>
+                    <h3>경찰</h3>
+                    <p>
+                        맵을 돌아다니며 숨어 있는 도둑을 찾아 체포합니다.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 3 -->
+        <section class="slide">
+            <div class="number">03 / 07</div>
+            <h2>도둑팀은 준비할 시간이 있습니다</h2>
+
+            <p>
+                게임이 시작되면 도둑팀에게 <strong>1~2분의 준비 시간</strong>이 주어집니다.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="icon">🚶</div>
+                    <h3>자유롭게 이동</h3>
+                    <p>준비 시간 동안 맵을 자유롭게 돌아다닐 수 있습니다.</p>
+                </div>
+
+                <div class="card">
+                    <div class="icon">📦</div>
+                    <h3>물건 획득</h3>
+                    <p>맵에 있는 물건을 최대 3개까지 가지고 갈 수 있습니다.</p>
+                </div>
+
+                <div class="card">
+                    <div class="icon">🧱</div>
+                    <h3>숨을 장소 준비</h3>
+                    <p>물건을 원하는 위치에 배치하고 숨을 준비를 합니다.</p>
+                </div>
+
+            </div>
+
+            <p style="margin-top:25px;">
+                ⚠️ 준비 시간이 끝나면 <strong>도둑은 이동할 수 없습니다.</strong>
+            </p>
+        </section>
+
+        <!-- 4 -->
+        <section class="slide">
+            <div class="number">04 / 07</div>
+            <h2>물건을 활용하세요</h2>
+
+            <p>
+                물건은 단순히 수집하는 것이 아니라<br>
+                자신의 모습을 숨기고 주변 환경에 자연스럽게 섞이기 위해 사용합니다.
+            </p>
+
+            <div class="object-demo">
+                <div class="box"></div>
+                <div class="person"></div>
+            </div>
+
+            <p>
+                물건은 원하는 위치에 배치할 수 있지만<br>
+                <strong>중력이 적용되므로 공중에 떠 있을 수 없습니다.</strong>
+            </p>
+        </section>
+
+        <!-- 5 -->
+        <section class="slide">
+            <div class="number">05 / 07</div>
+            <h2>경찰에게 발각되면?</h2>
+
+            <p>
+                경찰은 <strong>최대 10m 거리</strong>에서 발각 시스템을 사용할 수 있습니다.
+            </p>
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="icon">🔎</div>
+                    <h3>발견</h3>
+                    <p>경찰이 주변을 조사하며 도둑을 찾습니다.</p>
+                </div>
+
+                <div class="card">
+                    <div class="icon">🚨</div>
+                    <h3>발각</h3>
+                    <p>도둑이 발견되면 도망칠 수 없습니다.</p>
+                </div>
+
+                <div class="card">
+                    <div class="icon">⛓️</div>
+                    <h3>체포</h3>
+                    <p>발견된 도둑은 경찰에게 체포됩니다.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 6 -->
+        <section class="slide">
+            <div class="number">06 / 07</div>
+            <h2>체포와 감옥</h2>
+
+            <p>
+                도둑에게는 <strong>2개의 목숨</strong>이 있습니다.
+            </p>
+
+            <div class="jail">
+                <span>🔒</span>
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="icon">1️⃣</div>
+                    <h3>첫 번째 체포</h3>
+                    <p>감옥으로 이동합니다.</p>
+                </div>
+
+                <div class="card">
+                    <div class="icon">🤝</div>
+                    <h3>구출</h3>
+                    <p>다른 도둑팀원이 10초 동안 상호작용하면 구출할 수 있습니다.</p>
+                </div>
+
+                <div class="card">
+                    <div class="icon">2️⃣</div>
+                    <h3>두 번째 체포</h3>
+                    <p>게임에서 완전히 탈락합니다.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 7 -->
+        <section class="slide">
+            <div class="number">07 / 07</div>
+            <h2>이제 게임을 시작하세요</h2>
+
+            <p>
+                경찰은 물건을 공격해서 도둑을 확인할 수도 있습니다.
+            </p>
+
+            <p>
+                공격 HP는 경찰팀 전체가 공유하며<br>
+                총 <strong>10 HP</strong>가 주어집니다.
+            </p>
+
+            <p>
+                그리고 소리를 주의하세요.<br>
+                발걸음이나 물건이 움직이는 소리가 위치를 알려줄 수 있습니다.
+            </p>
+
+            <h1 style="margin-top:35px;">행운을 빕니다!</h1>
+
+            <button class="btn next" onclick="finishTutorial()">
+                게임 시작
+            </button>
+        </section>
+
+    </main>
+
+    <footer>
+        <button class="btn" id="prevBtn" onclick="prevSlide()">
+            이전
+        </button>
+
+        <button class="btn next" id="nextBtn" onclick="nextSlide()">
+            다음
+        </button>
+    </footer>
+
+</div>
+
+<script>
+
+    let currentSlide = 0;
+
+    const slides = document.querySelectorAll(".slide");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function updateSlide() {
+
+        slides.forEach((slide, index) => {
+            slide.classList.toggle("active", index === currentSlide);
+        });
+
+        const progress =
+            ((currentSlide + 1) / slides.length) * 100;
+
+        progressBar.style.width = progress + "%";
+
+        prevBtn.style.visibility =
+            currentSlide === 0 ? "hidden" : "visible";
+
+        if (currentSlide === slides.length - 1) {
+            nextBtn.style.display = "none";
+        } else {
+            nextBtn.style.display = "block";
+        }
+    }
+
+    function nextSlide() {
+
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            updateSlide();
+        }
+    }
+
+    function prevSlide() {
+
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateSlide();
+        }
+    }
+
+    function finishTutorial() {
+
+        /*
+            실제 게임에서는 여기에서
+            게임 시작 화면이나 Lobby 화면으로 이동시키면 됩니다.
+
+            예:
+            window.location.href = "index.html";
+        */
+
+        alert("튜토리얼이 끝났습니다!");
+    }
+
+    document.addEventListener("keydown", function(event) {
+
+        if (event.key === "ArrowRight" || event.key === " ") {
+            nextSlide();
+        }
+
+        if (event.key === "ArrowLeft") {
+            prevSlide();
+        }
+
+        if (event.key === "Escape") {
+            finishTutorial();
+        }
+
+    });
+
+    updateSlide();
+
+</script>
+
+</body>
+</html>
