@@ -68,10 +68,12 @@
         /* 본문 */
         .content {
             flex: 1;
+            min-height: 0;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 30px;
+            overflow-y: auto;
         }
 
         .slide {
@@ -80,6 +82,8 @@
             text-align: center;
             display: none;
             animation: fade 0.3s;
+            margin-top: auto;
+            margin-bottom: auto;
         }
 
         .slide.active {
@@ -182,46 +186,430 @@
             margin: 0;
         }
 
-        /* 물건 */
+        /* 물건 배치 애니메이션 */
         .object-demo {
-            width: 500px;
-            height: 220px;
-            margin: 35px auto;
+            width: min(620px, 100%);
+            height: 250px;
+            margin: 28px auto 20px;
             border: 1px solid #444;
             border-radius: 15px;
-            background: #191919;
+            background: linear-gradient(#20252a 0 72%, #25231f 72%);
             position: relative;
+            overflow: hidden;
+        }
+
+        .demo-caption {
+            position: absolute;
+            top: 15px;
+            left: 18px;
+            color: #aaa;
+            font-size: 13px;
+            letter-spacing: .04em;
+        }
+
+        .demo-ground {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 24px;
+            height: 3px;
+            background: #71695d;
+        }
+
+        .demo-shadow {
+            position: absolute;
+            width: 100px;
+            height: 12px;
+            left: 250px;
+            bottom: 13px;
+            border-radius: 50%;
+            background: #111;
+            opacity: .45;
+            animation: shadow-grow 8s infinite;
         }
 
         .box {
             position: absolute;
-            width: 100px;
-            height: 70px;
-            background: #777;
-            border-radius: 5px;
-            bottom: 30px;
-            left: 90px;
+            width: 88px;
+            height: 72px;
+            left: 256px;
+            bottom: 27px;
+            border: 3px solid #a98252;
+            border-radius: 5px 5px 8px 8px;
+            background: linear-gradient(90deg, #986b3e 0 18%, #b88750 18% 82%, #986b3e 82%);
+            box-shadow: inset 0 8px #c99a60;
+            transform: translateY(-145px) rotate(-8deg);
+            animation: place-box 8s infinite;
+            z-index: 2;
         }
 
         .person {
             position: absolute;
-            width: 45px;
-            height: 80px;
-            background: #ddd;
-            border-radius: 20px 20px 8px 8px;
-            bottom: 30px;
-            right: 120px;
+            width: 38px;
+            height: 60px;
+            left: 90px;
+            bottom: 27px;
+            border-radius: 16px 16px 7px 7px;
+            background: #d8d9dc;
+            transform-origin: bottom center;
+            animation: thief-move-hide 8s infinite;
+            z-index: 1;
         }
 
         .person::before {
             content: "";
             position: absolute;
-            width: 35px;
-            height: 35px;
+            width: 29px;
+            height: 29px;
             border-radius: 50%;
             background: #eee;
-            top: -30px;
-            left: 5px;
+            top: -24px;
+            left: 4px;
+        }
+
+        .person::after {
+            content: "";
+            position: absolute;
+            width: 26px;
+            height: 5px;
+            top: 22px;
+            left: 25px;
+            border-radius: 5px;
+            background: #d8d9dc;
+            transform: rotate(-25deg);
+            transform-origin: left center;
+            animation: carry-arm 8s infinite;
+        }
+
+        .demo-step {
+            position: absolute;
+            top: 48px;
+            left: 50%;
+            min-width: 220px;
+            padding: 8px 15px;
+            border: 1px solid #777;
+            border-radius: 22px;
+            background: #101010ee;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateX(-50%);
+            animation: step-label 8s infinite;
+        }
+
+        .demo-step.drop { animation-delay: 2.2s; }
+        .demo-step.hide { animation-delay: 4.5s; }
+
+        .attack-demo {
+            width: min(620px, 100%);
+            height: 190px;
+            margin: 28px auto;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #444;
+            border-radius: 15px;
+            background: linear-gradient(#20252a 0 78%, #25231f 78%);
+        }
+
+        .attack-ground {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 20px;
+            height: 3px;
+            background: #71695d;
+        }
+
+        .thrower-demo, .guard-demo {
+            position: absolute;
+            bottom: 23px;
+            width: 30px;
+            height: 48px;
+            border-radius: 13px 13px 5px 5px;
+        }
+
+        .thrower-demo {
+            left: 17%;
+            background: #d8d9dc;
+        }
+
+        .guard-demo {
+            right: 17%;
+            background: #6180a8;
+            animation: guard-stun 4s infinite;
+        }
+
+        .thrower-demo::before, .guard-demo::before {
+            content: "";
+            position: absolute;
+            width: 23px;
+            height: 23px;
+            top: -19px;
+            left: 3px;
+            border-radius: 50%;
+            background: #eee;
+        }
+
+        .thrown-prop {
+            position: absolute;
+            left: 17%;
+            bottom: 45px;
+            font-size: 24px;
+            animation: prop-arc 4s infinite;
+        }
+
+        .stun-mark {
+            position: absolute;
+            right: 13%;
+            bottom: 100px;
+            color: #ffe36e;
+            font-size: 23px;
+            font-weight: bold;
+            opacity: 0;
+            animation: stun-pop 4s infinite;
+        }
+
+        .arrest-demo {
+            width: min(620px, 100%);
+            height: 190px;
+            margin: 24px auto;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #444;
+            border-radius: 15px;
+            background: linear-gradient(#20252a 0 78%, #25231f 78%);
+        }
+
+        .find-demo {
+            width: min(620px, 100%);
+            height: 165px;
+            margin: 18px auto 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #444;
+            border-radius: 15px;
+            background: linear-gradient(#20252a 0 78%, #25231f 78%);
+        }
+
+        .find-ground {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 20px;
+            height: 3px;
+            background: #71695d;
+        }
+
+        .find-guard {
+            position: absolute;
+            left: 8%;
+            bottom: 23px;
+            width: 30px;
+            height: 48px;
+            border-radius: 13px 13px 5px 5px;
+            background: #6180a8;
+            animation: guard-patrol 7s infinite;
+        }
+
+        .find-guard::before {
+            content: "";
+            position: absolute;
+            width: 23px;
+            height: 23px;
+            top: -19px;
+            left: 3px;
+            border-radius: 50%;
+            background: #eee;
+        }
+
+        .hidden-prisoner {
+            position: absolute;
+            left: 57%;
+            bottom: 23px;
+            width: 28px;
+            height: 48px;
+            border-radius: 13px 13px 5px 5px;
+            background: #d8d9dc;
+            z-index: 1;
+        }
+
+        .hidden-prisoner::before {
+            content: "";
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            top: -18px;
+            left: 3px;
+            border-radius: 50%;
+            background: #eee;
+        }
+
+        .hide-object {
+            position: absolute;
+            left: 55%;
+            bottom: 23px;
+            width: 86px;
+            height: 62px;
+            border: 3px solid #a98252;
+            border-radius: 5px;
+            background: #b88750;
+            box-shadow: inset 0 8px #c99a60;
+            z-index: 2;
+        }
+
+        .find-alert {
+            position: absolute;
+            left: 57%;
+            top: 30px;
+            color: #ffe36e;
+            font-size: 18px;
+            font-weight: bold;
+            opacity: 0;
+            animation: prisoner-found 7s infinite;
+        }
+
+        .arrest-ground {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 20px;
+            height: 3px;
+            background: #71695d;
+        }
+
+        .arrest-person {
+            position: absolute;
+            bottom: 23px;
+            width: 30px;
+            height: 48px;
+            border-radius: 13px 13px 5px 5px;
+        }
+
+        .arrest-person::before {
+            content: "";
+            position: absolute;
+            width: 23px;
+            height: 23px;
+            top: -19px;
+            left: 3px;
+            border-radius: 50%;
+            background: #eee;
+        }
+
+        .arrest-officer { left: 16%; background: #6180a8; }
+        .arrest-target { left: 48%; background: #d8d9dc; }
+        .arrest-beam {
+            position: absolute;
+            left: 20%;
+            top: 92px;
+            width: 29%;
+            border-top: 2px dashed #ffe36e;
+            transform: rotate(-7deg);
+            transform-origin: left center;
+            animation: aim-flash 7s infinite;
+        }
+
+        .arrest-meter {
+            position: absolute;
+            top: 22px;
+            left: 36%;
+            width: 33%;
+            padding: 6px 8px;
+            border: 1px solid #888;
+            border-radius: 9px;
+            background: #101010ee;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .arrest-meter-track {
+            height: 7px;
+            margin-top: 5px;
+            overflow: hidden;
+            border-radius: 5px;
+            background: #444;
+        }
+
+        .arrest-meter-fill {
+            width: 0;
+            height: 100%;
+            background: #f2cc58;
+            animation: arrest-progress 7s infinite;
+        }
+
+        @keyframes arrest-progress {
+            0%, 15% { width: 0; }
+            85%, 100% { width: 100%; }
+        }
+
+        @keyframes guard-patrol {
+            0%, 12% { left: 8%; }
+            58%, 100% { left: 38%; }
+        }
+
+        @keyframes prisoner-found {
+            0%, 55% { opacity: 0; transform: scale(.7); }
+            62%, 88% { opacity: 1; transform: scale(1); }
+            96%, 100% { opacity: 0; transform: scale(.7); }
+        }
+
+        @keyframes aim-flash {
+            0%, 15% { opacity: 0; }
+            20%, 80% { opacity: 1; }
+            85%, 100% { opacity: 0; }
+        }
+
+
+        @keyframes prop-arc {
+            0%, 12% { left: 17%; bottom: 45px; transform: rotate(0deg); }
+            50% { left: 49%; bottom: 145px; transform: rotate(360deg); }
+            82%, 100% { left: 76%; bottom: 45px; transform: rotate(650deg); }
+        }
+
+        @keyframes guard-stun {
+            0%, 76% { transform: rotate(0); }
+            82%, 96% { transform: rotate(80deg) translateY(5px); }
+            100% { transform: rotate(0); }
+        }
+
+        @keyframes stun-pop {
+            0%, 80% { opacity: 0; }
+            84%, 96% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes thief-move-hide {
+            0%, 8% { left: 90px; transform: scale(1); }
+            30%, 38% { left: 205px; transform: scale(1); }
+            50% { left: 205px; transform: scale(1); }
+            60%, 72% { left: 310px; transform: scale(.72); }
+            80%, 100% { left: 310px; transform: scale(.72); }
+        }
+
+        @keyframes place-box {
+            0%, 22% { transform: translate(-150px, -145px) rotate(-8deg); }
+            38% { transform: translate(-20px, -145px) rotate(0); }
+            48% { transform: translate(0, 0) rotate(0); }
+            52% { transform: translate(0, -7px) rotate(2deg); }
+            57%, 100% { transform: translate(0, 0) rotate(0); }
+        }
+
+        @keyframes carry-arm {
+            0%, 22% { opacity: 1; }
+            38%, 100% { opacity: 0; }
+        }
+
+        @keyframes shadow-grow {
+            0%, 45% { transform: scale(.35); opacity: .15; }
+            55%, 100% { transform: scale(1); opacity: .45; }
+        }
+
+        @keyframes step-label {
+            0%, 8% { opacity: 0; }
+            12%, 30% { opacity: 1; }
+            36%, 100% { opacity: 0; }
         }
 
         /* 감옥 */
@@ -244,10 +632,14 @@
         /* 하단 */
         footer {
             height: 90px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
+            position: relative;
+            z-index: 2;
+            background: #111;
         }
 
         .btn {
@@ -309,6 +701,25 @@
             .object-demo {
                 width: 90%;
             }
+
+            .demo-shadow { left: 42%; }
+            .box { left: 42%; }
+
+            @keyframes thief-move-hide {
+                0%, 8% { left: 8%; transform: scale(1); }
+                30%, 38% { left: 30%; transform: scale(1); }
+                50% { left: 30%; transform: scale(1); }
+                60%, 72% { left: 55%; transform: scale(.72); }
+                80%, 100% { left: 55%; transform: scale(.72); }
+            }
+
+            @keyframes place-box {
+                0%, 22% { transform: translate(-150px, -145px) rotate(-8deg); }
+                38% { transform: translate(-15px, -145px) rotate(0); }
+                48% { transform: translate(0, 0) rotate(0); }
+                52% { transform: translate(0, -7px) rotate(2deg); }
+                57%, 100% { transform: translate(0, 0) rotate(0); }
+            }
         }
     </style>
 </head>
@@ -330,26 +741,26 @@
 
         <!-- 1 -->
         <section class="slide active">
-            <div class="number">01 / 07</div>
+            <div class="number">01 / 09</div>
             <h1>Busted!</h1>
             <p>
-                경찰에게 들키지 않고 숨어서 살아남거나,<br>
-                도둑을 찾아 체포하는 숨바꼭질 게임입니다.
+                교도소 곳곳에서 열쇠를 모아 탈출하거나,<br>
+                죄수를 찾아 체포하는 숨바꼭질 게임
             </p>
         </section>
 
         <!-- 2 -->
         <section class="slide">
-            <div class="number">02 / 07</div>
+            <div class="number">02 / 09</div>
             <h2>먼저 역할을 알아보세요</h2>
 
             <div class="roles">
 
                 <div class="role">
                     <div class="role-icon">🏃</div>
-                    <h3>도둑</h3>
+                    <h3>죄수</h3>
                     <p>
-                        맵에 숨어 경찰에게 발견되지 않는 것이 목표입니다.
+                        열쇠를 모아 탈출구를 열고 교도소를 빠져나가세요.
                     </p>
                 </div>
 
@@ -357,7 +768,7 @@
                     <div class="role-icon">👮</div>
                     <h3>경찰</h3>
                     <p>
-                        맵을 돌아다니며 숨어 있는 도둑을 찾아 체포합니다.
+                        교도소를 순찰하며 죄수를 찾고 탈출을 막습니다.
                     </p>
                 </div>
 
@@ -366,11 +777,11 @@
 
         <!-- 3 -->
         <section class="slide">
-            <div class="number">03 / 07</div>
-            <h2>도둑팀은 준비할 시간이 있습니다</h2>
+            <div class="number">03 / 09</div>
+            <h2>죄수팀은 준비할 시간이 있습니다</h2>
 
             <p>
-                게임이 시작되면 도둑팀에게 <strong>1~2분의 준비 시간</strong>이 주어집니다.
+                게임이 시작되면 죄수팀에게 <strong>1~2분의 준비 시간</strong>이 주어집니다.
             </p>
 
             <div class="cards">
@@ -396,70 +807,116 @@
             </div>
 
             <p style="margin-top:25px;">
-                ⚠️ 준비 시간이 끝나면 <strong>도둑은 이동할 수 없습니다.</strong>
+                ⚠️ 준비 시간이 끝나도 <strong>죄수는 계속 이동할 수 있습니다.</strong>
             </p>
         </section>
 
         <!-- 4 -->
         <section class="slide">
-            <div class="number">04 / 07</div>
-            <h2>물건을 활용하세요</h2>
+            <div class="number">04 / 09</div>
+            <h2>열쇠를 모아 탈출하세요</h2>
 
             <p>
-                물건은 단순히 수집하는 것이 아니라<br>
-                자신의 모습을 숨기고 주변 환경에 자연스럽게 섞이기 위해 사용합니다.
+                열쇠는 교도소 여러 장소에 흩어져 있습니다.<br>
+                필요한 수만큼 모아 탈출구를 여세요.
             </p>
 
-            <div class="object-demo">
-                <div class="box"></div>
-                <div class="person"></div>
+            <div class="cards">
+                <div class="card">
+                    <div class="icon">🔎</div>
+                    <h3>여러 장소 탐색</h3>
+                    <p>사무실, 창고 등 다양한 시설을 살펴보세요.</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🗝️</div>
+                    <h3>열쇠 수집</h3>
+                    <p>열쇠를 모아 탈출에 필요한 조건을 채우세요.</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🚪</div>
+                    <h3>출구 열기</h3>
+                    <p>필요한 수만큼 모으면 탈출구에서 문을 여세요.</p>
+                </div>
             </div>
 
-            <p>
-                물건은 원하는 위치에 배치할 수 있지만<br>
-                <strong>중력이 적용되므로 공중에 떠 있을 수 없습니다.</strong>
+            <p style="margin-top:25px;">
+                경찰은 순찰 중입니다. <strong>어느 장소를 먼저 살펴볼지</strong> 신중히 정하세요.
             </p>
         </section>
 
         <!-- 5 -->
         <section class="slide">
-            <div class="number">05 / 07</div>
-            <h2>경찰에게 발각되면?</h2>
+            <div class="number">05 / 09</div>
+            <h2>물건을 활용하세요</h2>
 
             <p>
-                경찰은 <strong>최대 10m 거리</strong>에서 발각 시스템을 사용할 수 있습니다.
+                물건을 가져와 숨을 곳에 직접 배치해 보세요.<br>
+                물건이 바닥에 떨어지면 그 뒤에 몸을 숨길 수 있습니다.
             </p>
 
-            <div class="cards">
-
-                <div class="card">
-                    <div class="icon">🔎</div>
-                    <h3>발견</h3>
-                    <p>경찰이 주변을 조사하며 도둑을 찾습니다.</p>
-                </div>
-
-                <div class="card">
-                    <div class="icon">🚨</div>
-                    <h3>발각</h3>
-                    <p>도둑이 발견되면 도망칠 수 없습니다.</p>
-                </div>
-
-                <div class="card">
-                    <div class="icon">⛓️</div>
-                    <h3>체포</h3>
-                    <p>발견된 도둑은 경찰에게 체포됩니다.</p>
-                </div>
-
+            <div class="object-demo" role="img" aria-label="죄수가 물건을 옮겨 바닥에 놓고, 물건 뒤에 숨는 장면">
+                <span class="demo-caption">죄수팀 준비 시간</span>
+                <div class="demo-shadow"></div>
+                <div class="demo-ground"></div>
+                <div class="box"></div>
+                <div class="person"></div>
+                <span class="demo-step collect">① 물건을 가져와</span>
+                <span class="demo-step drop">② 바닥에 놓고</span>
+                <span class="demo-step hide">③ 뒤에 숨기</span>
             </div>
+
+            <p>
+                <strong>중력이 적용되어 물건은 공중에 떠 있지 않습니다.</strong><br>
+                준비 시간이 끝나기 전에 배치와 숨기를 마치세요.
+            </p>
         </section>
 
         <!-- 6 -->
         <section class="slide">
-            <div class="number">06 / 07</div>
+            <div class="number">06 / 09</div>
+            <h2>조준해서 체포하세요</h2>
+
+            <p>
+                죄수가 숨어 있다가 발견되는 과정과 체포에 걸리는 시간을 확인하세요.
+            </p>
+
+            <h3>1. 숨어 있다가 발견!</h3>
+            <div class="find-demo" role="img" aria-label="상자 뒤에 숨은 죄수를 경찰이 순찰하다 발견하는 장면">
+                <div class="find-ground"></div>
+                <div class="find-guard"></div>
+                <div class="hidden-prisoner"></div>
+                <div class="hide-object"></div>
+                <div class="find-alert">발견!</div>
+            </div>
+
+            <h3>2. 조준하고 클릭하면 5초 체포</h3>
+            <div class="arrest-demo" role="img" aria-label="경찰이 죄수를 조준해 5초 동안 체포하는 장면">
+                <div class="arrest-ground"></div>
+                <div class="arrest-beam"></div>
+                <div class="arrest-person arrest-officer"></div>
+                <div class="arrest-person arrest-target"></div>
+                <div class="arrest-meter">
+                    체포 진행 중 · 5초
+                    <div class="arrest-meter-track"><div class="arrest-meter-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="cards" style="grid-template-columns:1fr; max-width:480px; margin-left:auto; margin-right:auto;">
+                <div class="card">
+                    <div class="icon">🎯</div>
+                    <h3>조준 + 클릭 = 체포 시작</h3>
+                    <p>체포에는 5초가 걸립니다. 대상은 움직일 수 없지만 다른 죄수들은 그동안 도망칠 수 있습니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7 -->
+        <section class="slide">
+            <div class="number">07 / 09</div>
             <h2>체포와 감옥</h2>
 
             <p>
-                도둑에게는 <strong>2개의 목숨</strong>이 있습니다.
+                죄수에게는 <strong>2개의 목숨</strong>이 있습니다.
             </p>
 
             <div class="jail">
@@ -477,35 +934,70 @@
                 <div class="card">
                     <div class="icon">🤝</div>
                     <h3>구출</h3>
-                    <p>다른 도둑팀원이 10초 동안 상호작용하면 구출할 수 있습니다.</p>
+                    <p>다른 죄수팀원이 10초 동안 상호작용하면 구출할 수 있습니다.</p>
                 </div>
 
                 <div class="card">
                     <div class="icon">2️⃣</div>
                     <h3>두 번째 체포</h3>
-                    <p>게임에서 완전히 탈락합니다.</p>
+                    <p>두 번째 체포로 마지막 목숨을 잃고 탈락합니다.</p>
                 </div>
 
             </div>
         </section>
 
-        <!-- 7 -->
+        <!-- 8 -->
         <section class="slide">
-            <div class="number">07 / 07</div>
-            <h2>이제 게임을 시작하세요</h2>
+            <div class="number">08 / 09</div>
+            <h2>물건을 던져 시간을 버세요</h2>
 
             <p>
-                경찰은 물건을 공격해서 도둑을 확인할 수도 있습니다.
+                죄수는 주변 물건을 경찰에게 던져 공격할 수 있습니다.<br>
+                맞은 경찰은 잠시 스턴되고, 죄수는 그 틈에 도망칠 수 있습니다.
+            </p>
+
+            <div class="attack-demo" role="img" aria-label="죄수가 물건을 포물선으로 던져 경찰을 맞히고, 경찰이 잠시 스턴되는 장면">
+                <div class="attack-ground"></div>
+                <div class="thrower-demo"></div>
+                <div class="guard-demo"></div>
+                <div class="thrown-prop">📦</div>
+                <div class="stun-mark">✦ 스턴!</div>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="icon">🧻</div>
+                    <h3>작은 물건 · 1초</h3>
+                    <p>가볍고 빠르게 던질 수 있지만 스턴은 짧습니다.</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🪣</div>
+                    <h3>중간 물건 · 2초</h3>
+                    <p>속도와 스턴 시간이 균형을 이룹니다.</p>
+                </div>
+                <div class="card">
+                    <div class="icon">📦</div>
+                    <h3>큰 물건 · 3초</h3>
+                    <p>더 오래 스턴시키지만 던지는 속도는 느립니다.</p>
+                </div>
+            </div>
+
+            <p style="margin-top:20px;">스턴 시간은 물건 크기에 따라 달라집니다.</p>
+        </section>
+
+        <!-- 9 -->
+        <section class="slide">
+            <div class="number">09 / 09</div>
+            <h2>순찰을 피해 탈출하세요</h2>
+
+            <p>
+                발걸음과 물건이 움직이는 소리에 주의하며<br>
+                경찰의 순찰을 피해 출구까지 이동하세요.
             </p>
 
             <p>
-                공격 HP는 경찰팀 전체가 공유하며<br>
-                총 <strong>10 HP</strong>가 주어집니다.
-            </p>
-
-            <p>
-                그리고 소리를 주의하세요.<br>
-                발걸음이나 물건이 움직이는 소리가 위치를 알려줄 수 있습니다.
+                열쇠를 모아 출구를 열고 탈출하면 죄수팀 승리!<br>
+                모든 죄수가 탈락하거나 시간이 끝나면 경찰팀 승리!
             </p>
 
             <h1 style="margin-top:35px;">행운을 빕니다!</h1>
@@ -534,11 +1026,14 @@
     let currentSlide = 0;
 
     const slides = document.querySelectorAll(".slide");
+    const content = document.querySelector(".content");
     const progressBar = document.getElementById("progressBar");
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
 
     function updateSlide() {
+
+        content.scrollTop = 0;
 
         slides.forEach((slide, index) => {
             slide.classList.toggle("active", index === currentSlide);
